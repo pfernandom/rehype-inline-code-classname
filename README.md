@@ -25,24 +25,46 @@ The separator by default is `^`, but it can be changed in the configuration.
 - config.separator: [String] The character that separates the class name from the content.
 - config.trailing: [Boolean] If true, it will try to find the class name at the end of the string.
 
+#### Option: separator
+
+Using a custom separator:
+
 ```js
 const result = await unified()
   // using '*' as the separator
   .use(rehypeInlineCodeClassNamePlugin, { separator: "*" });
-
-// `highlighted*const inline = "code";`
-//      is parsed as:
-// <code class="highlighted"> const inline = "code" </code>
 ```
+
+The markdown:
+
+```md
+`highlighted*const inline = "code";`
+```
+
+Is parsed as:
+
+```html
+<code class="highlighted">const inline = "code";</code>
+```
+
+#### Option: trailing
 
 ```js
 const result = await unified()
   // using '*' as the separator
   .use(rehypeInlineCodeClassNamePlugin, { trailing: true });
+```
 
-// `const inline = "code";^highlighted`
-//      is parsed as:
-// <code class="highlighted"> const inline = "code";</code>
+The markdown:
+
+```md
+`const inline = "code";^highlighted`
+```
+
+Is parsed as:
+
+```html
+<code class="highlighted">const inline = "code";</code>
 ```
 
 ### Using unified
