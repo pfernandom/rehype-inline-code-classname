@@ -1,6 +1,6 @@
 {
   "name": "rehype-inline-code-classname",
-  "version": "1.0.0",
+  "version": "1.0.4",
   "description": "A rehype plugin to support adding className to inline code blocks",
   "author": "Pedro Marquez <pedro.f.marquez.soto@gmail.com>",
   "license": "MIT",
@@ -8,6 +8,9 @@
   "exports": "./dist/index.js",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/pfernandom/rehype-inline-code-classname.git"
@@ -28,11 +31,6 @@
     "unified",
     "xdm",
     "yaml"
-  ],
-  "files": [
-    "./dist/index.js",
-    "./dist/index.d.ts",
-    "./dist/plugin/index.d.ts"
   ],
   "engines": {
     "node": ">=14.0.0"
