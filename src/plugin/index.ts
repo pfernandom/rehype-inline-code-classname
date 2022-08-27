@@ -1,38 +1,47 @@
-import { Element, Root, Text } from 'hast'
-import { Transformer } from 'unified'
-import visit from 'unist-util-visit'
+import { Element, Root, Text } from "hast";
+import { Transformer } from "unified";
+import visit from "unist-util-visit";
 
 export function rehypeInlineCodeClassNamePlugin(
   options?: Options
 ): void | Transformer<Root, Root> {
+  const separator = options?.separator ?? "^";
+  const trailing = options?.trailing ?? false;
+
   return function (root) {
+    function extract(value: String) {
+      const [part1, part2] = value.split(separator);
+
+      return trailing
+        ? { className: part2, content: part1 }
+        : { className: part1, content: part2 };
+    }
+
     visit(
       root,
-      'element',
+      "element",
       function visitor(node: Element, i: number, parent: any) {
-        if (node.tagName !== 'code') return
-        if (!parent || parent.tagName === 'pre') return
+        if (node.tagName !== "code") return;
+        if (!parent || parent.tagName === "pre") return;
 
-        const separator = options?.separator ?? '^'
-
-        const [{ value, ...rest }] = node.children as Text[]
+        const [{ value, ...rest }] = node.children as Text[];
         if (value.includes(separator)) {
-          const [classname, content] = value.split(separator)
-          node.children = [{ value: content, ...rest }] as Text[]
+          const { className, content } = extract(value);
+          node.children = [{ value: content, ...rest }] as Text[];
           node.properties = {
-            className: classname,
-          }
+            className: className,
+          };
         }
       }
-    )
+    );
 
-    return root
-  }
+    return root;
+  };
 }
 export type Options =
   | {
-      separator: string
-      trailing: boolean
+      separator: string;
+      trailing: boolean;
     }
   | void
-  | undefined
+  | undefined;

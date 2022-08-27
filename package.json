@@ -36,10 +36,11 @@
     "node": ">=14.0.0"
   },
   "scripts": {
-    "prepare": "npm run build",
+    "prepare": "npm test && npm run build",
     "build": "tsc --noEmit false",
     "prepack": "tsc --noEmit false",
-    "test": "mocha"
+    "test": "mocha",
+    "debug-test": "DEBUG='test.spec.js' npx mocha"
   },
   "moduleResolution": "node",
   "dependencies": {

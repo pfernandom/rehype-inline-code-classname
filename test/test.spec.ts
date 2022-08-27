@@ -1,26 +1,29 @@
-import { expect } from 'chai'
-import { Element } from 'hast'
-import { fromMarkdown } from 'mdast-util-from-markdown'
-import 'mocha'
-import remarkParse from 'remark-parse'
-import { read } from 'to-vfile'
+import { expect } from "chai";
+import { Element } from "hast";
+import { fromMarkdown } from "mdast-util-from-markdown";
+import "mocha";
+import remarkParse from "remark-parse";
+import { read } from "to-vfile";
 
-import rehypeDocument from 'rehype-document'
-import rehypeFormat from 'rehype-format'
-import rehypeStringify from 'rehype-stringify'
+import rehypeDocument from "rehype-document";
+import rehypeFormat from "rehype-format";
+import rehypeStringify from "rehype-stringify";
 
-import { Handler, toHast } from 'mdast-util-to-hast'
-import remarkRehype from 'remark-rehype'
+import debug from "debug";
+import { Handler, toHast } from "mdast-util-to-hast";
+import remarkRehype from "remark-rehype";
 
-import { toHtml } from 'hast-util-to-html'
+import { toHtml } from "hast-util-to-html";
 // @ts-ignore
-import { rehypeInlineCodeClassNamePlugin } from '../src/plugin/index.ts'
+import { rehypeInlineCodeClassNamePlugin } from "../src/plugin/index.ts";
 
 // import { use } from 'chai'
-import { unified } from 'unified'
+import { unified } from "unified";
 
-describe('Test rehypeInlineCodeClassNamePlugin', () => {
-  it('should test plugin', async () => {
+const log = debug("test.spec.js");
+
+describe("Test rehypeInlineCodeClassNamePlugin", () => {
+  it("should test plugin", async () => {
     const result = await unified()
       .use(remarkParse)
       .use(remarkRehype)
@@ -28,73 +31,104 @@ describe('Test rehypeInlineCodeClassNamePlugin', () => {
       .use(rehypeDocument)
       .use(rehypeFormat)
       .use(rehypeStringify)
-      .process(await read('./test/example.md'))
+      .process(await read("./test/example.md"));
 
-    // console.log(transformedAst.children[0].children)
+    log(JSON.stringify(result, undefined, 4));
 
-    console.error(JSON.stringify(result, undefined, 4))
     expect(String(result.value)).to.include(
       '<code class="dart">const inline = "code";</code>'
-    )
+    );
     expect(result.value).to.include(
       '<pre><code class="language-js">Maybe block code\n\n</code></pre>'
-    )
-    // console.log(String(result))
-  })
+    );
+  });
 
-  it('should test plugin with custom separator', async () => {
+  it("should test plugin with custom separator", async () => {
     const result = await unified()
       .use(remarkParse)
       .use(remarkRehype)
-      .use(rehypeInlineCodeClassNamePlugin, { separator: '*' })
+      .use(rehypeInlineCodeClassNamePlugin, { separator: "*" })
       .use(rehypeDocument)
       .use(rehypeFormat)
       .use(rehypeStringify)
-      .process(await read('./test/example.md'))
+      .process(await read("./test/example.md"));
 
-    console.log(JSON.stringify(result.value))
+    log(JSON.stringify(result, undefined, 4));
 
     expect(String(result.value)).to.include(
       '<code class="dart">code with custom separator</code>'
-    )
-    // console.log(String(result))
-  })
+    );
+  });
 
-  it('should test handler', async () => {
-    const markdown = String(await read('./test/example.md'))
-    const mdast = fromMarkdown(markdown)
+  it("should test plugin with trailing class", async () => {
+    const result = await unified()
+      .use(remarkParse)
+      .use(remarkRehype)
+      .use(rehypeInlineCodeClassNamePlugin, { trailing: true })
+      .use(rehypeDocument)
+      .use(rehypeFormat)
+      .use(rehypeStringify)
+      .process(await read("./test/example.md"));
+
+    log(JSON.stringify(result, undefined, 4));
+
+    expect(String(result.value)).to.include(
+      '<code class="dart">code with trailing</code>'
+    );
+  });
+
+  it("should test plugin with trailing class and custom separator", async () => {
+    const result = await unified()
+      .use(remarkParse)
+      .use(remarkRehype)
+      .use(rehypeInlineCodeClassNamePlugin, { trailing: true, separator: "*" })
+      .use(rehypeDocument)
+      .use(rehypeFormat)
+      .use(rehypeStringify)
+      .process(await read("./test/example.md"));
+
+    log(JSON.stringify(result, undefined, 4));
+
+    expect(String(result.value)).to.include(
+      '<code class="dart">code with trailing and custom separator</code>'
+    );
+  });
+
+  it("should test handler", async () => {
+    const markdown = String(await read("./test/example.md"));
+    const mdast = fromMarkdown(markdown);
 
     const handler: Handler = (h, node, parent) => {
       //console.log({ node })
-      if (node.value.includes('^')) {
-        const [lang, value] = node.value.split('^')
+      if (node.value.includes("^")) {
+        const [lang, value] = node.value.split("^");
         const element: Element = {
-          type: 'element',
-          tagName: 'code',
+          type: "element",
+          tagName: "code",
           properties: {
-            className: ['language-' + lang],
+            className: ["language-" + lang],
           },
           children: [
             {
-              type: 'text',
+              type: "text",
               value: value,
             },
           ],
-        }
-        return element
+        };
+        return element;
       }
-      return toHast(node) as import('hast').Element
-    }
+      return toHast(node) as import("hast").Element;
+    };
 
     const handlers: Record<string, Handler> = {
       inlineCode: handler,
-    }
+    };
 
-    const hast = toHast(mdast, { handlers: { inlineCode: handler } })
-    const html = toHtml(hast as import('hast').Root)
+    const hast = toHast(mdast, { handlers: { inlineCode: handler } });
+    const html = toHtml(hast as import("hast").Root);
 
     // console.log(JSON.stringify(hast, undefined, 4))
     // console.log(JSON.stringify(hast, undefined, 4))
     // console.log(html)
-  })
-})
+  });
+});
