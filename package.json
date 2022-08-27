@@ -31,7 +31,8 @@
   ],
   "files": [
     "./dist/index.js",
-    "./dist/index.d.ts"
+    "./dist/index.d.ts",
+    "./dist/plugin/index.d.ts"
   ],
   "engines": {
     "node": ">=14.0.0"
