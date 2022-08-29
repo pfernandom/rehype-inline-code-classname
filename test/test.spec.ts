@@ -20,6 +20,15 @@ import { rehypeInlineCodeClassNamePlugin } from "../src/plugin/index.ts";
 // import { use } from 'chai'
 import { unified } from "unified";
 
+import { compile } from "@mdx-js/mdx";
+import { readFile } from "fs/promises";
+import { getMDXComponent } from "mdx-bundler/client/index.js";
+import { bundleMDX } from "mdx-bundler/dist/index.js";
+import { mdxToMd } from "mdx-to-md";
+import path from "path";
+import { createElement } from "react";
+import { renderToStaticMarkup, renderToString } from "react-dom/server";
+
 const log = debug("test.spec.js");
 
 describe("Test rehypeInlineCodeClassNamePlugin", () => {
@@ -75,6 +84,50 @@ describe("Test rehypeInlineCodeClassNamePlugin", () => {
     expect(String(result.value)).to.include(
       '<code class="dart">code with trailing</code>'
     );
+  });
+
+  it("should test plugin with mdx", async () => {
+    // const { load, getFormat, transformSource } = createLoader(/* Options… */);
+    // console.log(path.resolve("./test/example.md"));
+    // const file = await load(path.resolve("./test/example.md"), {}, () => {});
+
+    const f = await read("./test/example2.mdx");
+    const v = await compile(String(f.value), {
+      outputFormat: "function-body",
+      useDynamicImport: true,
+      jsx: true,
+    });
+    console.log({ v });
+
+    const p = path.resolve("./test/example2.mdx");
+    const contents = await readFile(p, "utf-8");
+    const { code } = await bundleMDX({
+      source: contents,
+      cwd: path.dirname(p),
+    });
+    const cmp = getMDXComponent(code);
+    console.log({ cmp });
+    const element = createElement(cmp);
+    const html = renderToString(element);
+    const html2 = renderToStaticMarkup(element);
+    // console.log({ element });
+    // console.log({ html });
+    // console.log({ html2 });
+
+    const markdown = await mdxToMd(path.resolve("./test/example2.mdx"));
+
+    // console.log({ markdown });
+
+    const result = await unified()
+      .use(remarkParse)
+      .use(remarkRehype)
+      // .use(rehypeInlineCodeClassNamePlugin, { trailing: true })
+      .use(rehypeDocument)
+      .use(rehypeFormat)
+      .use(rehypeStringify)
+      .process(await read("./test/example2.mdx"));
+
+    // console.log(JSON.stringify(result, undefined, 4));
   });
 
   it("should test plugin with trailing class and custom separator", async () => {

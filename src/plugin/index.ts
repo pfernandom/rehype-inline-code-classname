@@ -1,6 +1,6 @@
 import { Element, Root, Text } from "hast";
 import { Transformer } from "unified";
-import visit from "unist-util-visit";
+import { visit } from "unist-util-visit";
 
 export function rehypeInlineCodeClassNamePlugin(
   options?: Options
@@ -20,7 +20,7 @@ export function rehypeInlineCodeClassNamePlugin(
     visit(
       root,
       "element",
-      function visitor(node: Element, i: number, parent: any) {
+      function visitor(node: Element, i: number | null, parent: any) {
         if (node.tagName !== "code") return;
         if (!parent || parent.tagName === "pre") return;
 
