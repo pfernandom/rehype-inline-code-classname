@@ -1,6 +1,6 @@
 {
   "name": "rehype-inline-code-classname",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "A rehype plugin to support adding className to inline code blocks",
   "author": "Pedro Marquez <pedro.f.marquez.soto@gmail.com>",
   "license": "MIT",
