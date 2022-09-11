@@ -18,3 +18,7 @@ Maybe block code
 Some _emphasis_, **importance**, and `code test`.
 
 `^` is not parsed alone
+
+`markdown^^` separator is only used once
+
+` ^^` maybe

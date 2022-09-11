@@ -52,6 +52,8 @@ describe("Test rehypeInlineCodeClassNamePlugin", () => {
     );
 
     expect(result.value).to.include("<code>^</code>");
+    expect(result.value).to.include('<code class="markdown">^</code>');
+    expect(result.value).to.include(`<code class=" ">^</code>`);
   });
 
   it("should test plugin with custom separator", async () => {

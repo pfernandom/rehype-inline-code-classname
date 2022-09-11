@@ -10,7 +10,8 @@ export function rehypeInlineCodeClassNamePlugin(
 
   return function (root) {
     function extract(value: String) {
-      const [part1, part2] = value.split(separator);
+      const [_, part1, part2] =
+        value.match(new RegExp(`(.+)\\${separator}(.+)`)) ?? [];
 
       return trailing
         ? { className: part2, content: part1 }
