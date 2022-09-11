@@ -50,6 +50,8 @@ describe("Test rehypeInlineCodeClassNamePlugin", () => {
     expect(result.value).to.include(
       '<pre><code class="language-js">Maybe block code\n\n</code></pre>'
     );
+
+    expect(result.value).to.include("<code>^</code>");
   });
 
   it("should test plugin with custom separator", async () => {
@@ -97,7 +99,6 @@ describe("Test rehypeInlineCodeClassNamePlugin", () => {
       useDynamicImport: true,
       jsx: true,
     });
-    console.log({ v });
 
     const p = path.resolve("./test/example2.mdx");
     const contents = await readFile(p, "utf-8");
@@ -106,7 +107,6 @@ describe("Test rehypeInlineCodeClassNamePlugin", () => {
       cwd: path.dirname(p),
     });
     const cmp = getMDXComponent(code);
-    console.log({ cmp });
     const element = createElement(cmp);
     const html = renderToString(element);
     const html2 = renderToStaticMarkup(element);
@@ -146,6 +146,16 @@ describe("Test rehypeInlineCodeClassNamePlugin", () => {
       '<code class="dart">code with trailing and custom separator</code>'
     );
   });
+
+  // it("mast and hast trees", async () => {
+  //   const markdown = String(await read("./test/example.md"));
+  //   const mdast = fromMarkdown(markdown);
+
+  //   const hast = toHast(mdast);
+
+  //   console.log(JSON.stringify(mdast, undefined, 4));
+  //   console.log(JSON.stringify(hast, undefined, 4));
+  // });
 
   it("should test handler", async () => {
     const markdown = String(await read("./test/example.md"));

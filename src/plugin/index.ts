@@ -25,7 +25,7 @@ export function rehypeInlineCodeClassNamePlugin(
         if (!parent || parent.tagName === "pre") return;
 
         const [{ value, ...rest }] = node.children as Text[];
-        if (value.includes(separator)) {
+        if (value.includes(separator) && value.length > 2) {
           const { className, content } = extract(value);
           node.children = [{ value: content, ...rest }] as Text[];
           node.properties = {
